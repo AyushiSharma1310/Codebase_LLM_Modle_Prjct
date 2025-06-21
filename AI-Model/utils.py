@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 from langchain_community.document_loaders import PythonLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS          # ← updated
 from langchain_community.llms import OpenAI
                 # ← for Groq/OpenAI‑compatible completions
@@ -22,12 +22,14 @@ def load_and_split_code(path="codebase/"):
     return splitter.split_documents(docs)
 
 def create_or_load_index(docs, persist_dir="vectorstore"):
-    embeddings = OpenAIEmbeddings(
-        openai_api_key=os.getenv("GROQ_API_KEY"),
-        openai_api_base=os.getenv("GROQ_API_BASE"),
+    # Use a free local embedding model instead of OpenAI/Groq
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        model_kwargs={'device': 'cpu'}
     )
+    
     if os.path.exists(persist_dir):
-        return FAISS.load_local(persist_dir, embeddings)
+        return FAISS.load_local(persist_dir, embeddings, allow_dangerous_deserialization=True)
     else:
         db = FAISS.from_documents(docs, embeddings)
         db.save_local(persist_dir)

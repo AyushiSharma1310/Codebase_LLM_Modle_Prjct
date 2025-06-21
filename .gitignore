@@ -1,3 +1,4 @@
 AI-Model/.env
 AI-Model/venv
 AI-Model/__pycache__
+AI-Model/vectorstore
