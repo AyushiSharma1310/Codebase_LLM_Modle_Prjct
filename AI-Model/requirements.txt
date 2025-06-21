@@ -1,0 +1,13 @@
+streamlit
+transformers
+torch
+langchain
+langchain-community
+langchain-openai
+sentence-transformers
+unstructured
+openai
+tiktoken
+groq
+python-dotenv
+faiss-cpu
